@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Life Path</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="brand"><a href="{{ url_for('main.home') }}">Life Path</a></div>
+      <nav aria-label="Primary">
+        <a href="{{ url_for('main.home') }}">Home</a>
+        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('main.goal_new') }}">New Goal</a>
+        <a href="{{ url_for('main.flowchart') }}">Flowchart</a>
+        <a href="{{ url_for('main.pricing') }}">Pricing</a>
+        <a href="{{ url_for('main.contact') }}">Contact</a>
+        <a href="{{ url_for('main.about') }}">Get to Know Us</a>
+      </nav>
+    </header>
+
+    <main id="main-content" class="site-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="alerts" aria-live="polite">
+            {% for category, message in messages %}
+              <li class="alert {{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>Life Path</strong> · [Bank info] injection point
+      </div>
+      <nav aria-label="Legal and support links">
+        <a href="{{ url_for('main.contact') }}">Contact Us</a>
+        <a href="{{ url_for('main.privacy') }}">Privacy</a>
+        <a href="{{ url_for('main.terms') }}">Terms</a>
+        <a href="{{ url_for('main.refund') }}">Refund</a>
+        <a href="{{ url_for('main.cookies') }}">Cookies</a>
+        <a href="{{ url_for('main.cart') }}">Cart</a>
+        <a href="{{ url_for('main.checkout_page') }}">Checkout</a>
+        <a href="{{ url_for('main.history') }}">Completed Goals</a>
+      </nav>
+    </footer>
+  </body>
+</html>
