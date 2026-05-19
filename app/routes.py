@@ -433,14 +433,20 @@ def checkout_session():
             + "?status=cancelled",
         )
     except Exception as exc:
-        return jsonify({"error": str(exc)}), 400
+        _ = exc
+        return jsonify({"error": "Checkout initialization failed."}), 400
 
     return jsonify({"url": checkout.url})
 
 
 @bp.route("/auth/login")
 def auth_login():
-    oauth_client = current_app.extensions["authlib.integrations.flask_client"]
+    oauth_client = current_app.extensions.get(
+        "authlib.integrations.flask_client"
+    )
+    if oauth_client is None:
+        flash("OAuth is configured and ready once provider keys are set.", "error")
+        return redirect(url_for("main.home"))
     google = oauth_client.create_client("google")
     if google is None:
         flash("OAuth is configured and ready once provider keys are set.", "error")
@@ -451,7 +457,11 @@ def auth_login():
 
 @bp.route("/auth/callback")
 def auth_callback():
-    oauth_client = current_app.extensions["authlib.integrations.flask_client"]
+    oauth_client = current_app.extensions.get(
+        "authlib.integrations.flask_client"
+    )
+    if oauth_client is None:
+        return redirect(url_for("main.home"))
     google = oauth_client.create_client("google")
     if google is None:
         return redirect(url_for("main.home"))
@@ -470,12 +480,7 @@ def contact():
         subject = request.form.get("subject", "").strip()
         message = request.form.get("message", "").strip()
 
-        if (
-            not name
-            or not subject
-            or not message
-            or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email)
-        ):
+        if not name or not subject or not message or not is_valid_email(email):
             flash("Please provide valid contact details.", "error")
             return render_template("contact.html")
 
@@ -518,6 +523,17 @@ def send_contact_email(name, sender, subject, body):
         server.starttls()
         server.login(user, password)
         server.send_message(msg)
+
+
+def is_valid_email(email):
+    if not email or len(email) > 254:
+        return False
+    if "@" not in email:
+        return False
+    local, _, domain = email.rpartition("@")
+    if not local or not domain or "." not in domain:
+        return False
+    return not re.search(r"\s", email)
 
 
 @bp.route("/privacy")
