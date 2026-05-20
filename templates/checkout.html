@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Checkout</h1>
+<p>Secure payment powered by Stripe subscriptions.</p>
+<p>If Stripe keys are not configured yet, checkout will show setup errors.</p>
+<form id="checkout-form" method="post" action="{{ url_for('main.checkout_session') }}" class="stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Plan
+    <select name="plan">
+      {% for key, plan in plans.items() if key != 'free' %}
+      <option value="{{ key }}" {% if selected == key %}selected{% endif %}>{{ plan['name'] }} ({{ plan['price'] }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">Proceed to Stripe</button>
+</form>
+<p id="checkout-error" role="alert"></p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Completed Goals</h1>
+<ul>
+  {% for goal in goals %}
+  <li>
+    <strong>{{ goal['title'] }}</strong> for {{ goal['person_name'] }}
+    <small>completed {{ goal['completed_at'] }}</small>
+  </li>
+  {% else %}
+  <li>No goals completed yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
